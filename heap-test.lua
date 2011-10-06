@@ -109,7 +109,7 @@ local function test_heap_speed(h, name, runs, insert_count, pop_count, range)
   io.write(("Testing %s speed...\n"):format(name))
   local start = os.clock()
   for i = 1,runs do
-    io.write("Step: ", i, "/", runs..".\r")
+    io.write("Step: ", i, "/", runs, ".\r")
     for j = 1,insert_count do
       h:insert(math_random(range), nil)
     end
@@ -123,7 +123,7 @@ local function test_heap_speed(h, name, runs, insert_count, pop_count, range)
   end
   
   local elapsed = os.clock() - start
-  io.write("Done.  Elapsed time "..elapsed.." seconds (", elapsed / (insert_count * runs), " s/insert+pop).\n")
+  io.write("Done.  Elapsed time ", elapsed, " seconds (", elapsed / (insert_count * runs), " s/insert+pop).\n")
 end
 
 
@@ -141,7 +141,7 @@ local function test_sort_queue_speed(runs, insert_count, pop_count, range)
   io.write("Testing sorted queue speed...\n")
   local start = os.clock()
   for i = 1,runs do
-    io.write("Step: ", i, "/", runs..".\r")
+    io.write("Step: ", i, "/", runs, ".\r")
     for j = 1,insert_count do
       h[#h+1] = { key=math_random(range), value=nil }
     end
@@ -156,7 +156,7 @@ local function test_sort_queue_speed(runs, insert_count, pop_count, range)
   end
   
   local elapsed = os.clock() - start
-  io.write("Done.  Elapsed time "..elapsed.." seconds (", elapsed / (insert_count * runs), " s/insert+pop).\n")
+  io.write("Done.  Elapsed time ", elapsed, " seconds (", elapsed / (insert_count * runs), " s/insert+pop).\n")
 end
 
 

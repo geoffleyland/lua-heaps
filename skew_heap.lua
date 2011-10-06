@@ -102,20 +102,19 @@ end
 
 -- checking --------------------------------------------------------------------
 
-function heap:check(cmp)
-  local cmp = cmp or self.comparison
-
-  local function c(h)
-    if h == nil then return true end
-    local k, l, r = h.key, h.left, h.right
-    if (l and cmp(l.key, k)) or (r and cmp(r.key, k)) then
-      return false
-    else
-      return c(l) and c(r)
-    end
+local function _check(h, cmp)
+  if h == nil then return true end
+  local k, l, r = h.key, h.left, h.right
+  if (l and cmp(l.key, k)) or (r and cmp(r.key, k)) then
+    return false
+  else
+    return _check(l, cmp) and _check(r, cmp)
   end
+end
 
-  return c(self.left)
+
+function heap:check(cmp)
+  return _check(self.left, cmp or self.comparison)
 end
 
 
