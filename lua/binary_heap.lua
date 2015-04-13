@@ -21,33 +21,24 @@ THE SOFTWARE.
 --]]
 
 
-local io = require("io")
-local math = require("math")
-local string = require("string")
-local assert, ipairs, setmetatable, tostring = assert, ipairs, setmetatable, tostring
-local math_floor = math.floor
+-- heap construction ---------------------------------------------------------
 
-module(...)
+local heap = {}
+heap.__index = heap
 
--- heap construction -----------------------------------------------------------
-
-heap = _M
 
 local function default_comparison(k1, k2)
   return k1 < k2
 end
 
 
-function heap:new(comparison, o)
-  o = o or { length = 0 }
-  self.__index = self
-  setmetatable(o, self)
-  o.comparison = comparison or default_comparison
-  return o
+function heap:new(comparison)
+  return setmetatable(
+    { length = 0, comparison = comparison or default_comparison }, self)
 end
 
 
--- info ------------------------------------------------------------------------
+-- info ----------------------------------------------------------------------
 
 function heap:next_key()
   assert(self.length > 0, "The heap is empty")
@@ -60,7 +51,7 @@ function heap:empty()
 end
 
 
--- insertion and popping -------------------------------------------------------
+-- insertion and popping -----------------------------------------------------
 
 function heap:insert(k, v)
   assert(k, "You can't insert nil into a heap")
@@ -69,10 +60,10 @@ function heap:insert(k, v)
 
   -- float the new key up from the bottom of the heap
   self.length = self.length + 1
-  local new_record = self[self.length]  -- keep the old record to save on garbage
+  local new_record = self[self.length]  -- keep the old table to save garbage
   local child_index = self.length
   while child_index > 1 do
-    local parent_index = math_floor(child_index / 2)
+    local parent_index = math.floor(child_index / 2)
     local parent_rec = self[parent_index]
     if cmp(k, parent_rec.key) then
       self[child_index] = parent_rec
@@ -109,7 +100,8 @@ function heap:pop()
   local parent_index = 1
   while parent_index * 2 <= self.length do
     local child_index = parent_index * 2
-    if child_index+1 <= self.length and cmp(self[child_index+1].key, self[child_index].key) then
+    if child_index+1 <= self.length and
+       cmp(self[child_index+1].key, self[child_index].key) then
       child_index = child_index + 1
     end
     local child_rec = self[child_index]
@@ -126,7 +118,7 @@ function heap:pop()
 end
 
 
--- checking --------------------------------------------------------------------
+-- checking ------------------------------------------------------------------
 
 function heap:check()
   local cmp = self.comparison
@@ -141,7 +133,7 @@ function heap:check()
 end
 
 
--- pretty printing ---------------------------------------------------------------
+-- pretty printing -----------------------------------------------------------
 
 function heap:write(f, tostring_func)
   f = f or io.stdout
@@ -165,7 +157,8 @@ function heap:write(f, tostring_func)
     if left_child_index + 1 <= self.length then
       right_spaces = write_node(lines, left_child_index + 1, level+1, end_spaces)
     end
-    lines[level] = lines[level]..string.rep(' ', left_spaces)..my_string..string.rep(' ', right_spaces + end_spaces)
+    lines[level] = lines[level]..string.rep(' ', left_spaces)..
+                   my_string..string.rep(' ', right_spaces + end_spaces)
     return left_spaces + my_string:len() + right_spaces
   end
 
@@ -177,4 +170,9 @@ function heap:write(f, tostring_func)
 end
 
 
--- EOF -------------------------------------------------------------------------
+------------------------------------------------------------------------------
+
+return heap
+
+------------------------------------------------------------------------------
+

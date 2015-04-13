@@ -24,27 +24,24 @@ THE SOFTWARE.
 -- http://www.cs.usu.edu/~allan/DS/Notes/Ch23.pdf
 
 
-local io = require("io")
-local math = require("math")
-local string = require("string")
-local assert, ipairs, setmetatable, tostring = assert, ipairs, setmetatable, tostring
+-- heap construction ---------------------------------------------------------
 
-module(...)
 
--- heap construction -----------------------------------------------------------
+local heap = {}
+heap.__index = heap
 
-heap = _M
 
-function heap:new(comparison, o)
-  o = o or {}
-  self.__index = self
-  setmetatable(o, self)
-  o.comparison = comparison or function(k1, k2) return k1 < k2 end
-  return o
+local function default_comparison(k1, k2)
+  return k1 < k2
 end
 
 
--- info ------------------------------------------------------------------------
+function heap:new(comparison)
+  return setmetatable({ comparison = comparison or default_comparison }, self)
+end
+
+
+-- info ----------------------------------------------------------------------
 
 function heap:next_key()
   assert(self.left, "The heap is empty")
@@ -57,7 +54,7 @@ function heap:empty()
 end
 
 
--- merging ---------------------------------------------------------------------
+-- merging -------------------------------------------------------------------
 
 function heap:merge(a, b)
   local cmp = self.comparison
@@ -67,11 +64,11 @@ function heap:merge(a, b)
     head.left = a
   else
     while a do
-      if cmp(a.key, b.key) then                 -- a is less (or higher priority) than b
-        head.left = a                           -- the lesser tree goes on the left
-        head = a                                -- and we work on that in the next round
-        a = head.right                          -- by merging its right side with b
-        head.right = head.left                  -- and we move the left side to the right
+      if cmp(a.key, b.key) then     -- a is less (or higher priority) than b
+        head.left = a               -- the lesser tree goes on the left
+        head = a                    -- and we work on that in the next round
+        a = head.right              -- by merging its right side with b
+        head.right = head.left      -- and we move the left side to the right
       else
         head.left = b
         head = b
@@ -84,7 +81,7 @@ function heap:merge(a, b)
 end
 
 
--- insertion and popping -------------------------------------------------------
+-- insertion and popping ------------------------------------------------------
 
 function heap:insert(k, v)
   assert(k, "You can't insert nil into a heap")
@@ -100,7 +97,7 @@ function heap:pop()
 end
 
 
--- checking --------------------------------------------------------------------
+-- checking ------------------------------------------------------------------
 
 local function _check(h, cmp)
   if h == nil then return true end
@@ -118,7 +115,7 @@ function heap:check(cmp)
 end
 
 
--- pretty printing ---------------------------------------------------------------
+-- pretty printing -----------------------------------------------------------
 
 function heap:write(f, tostring_func)
   f = f or io.stdout
@@ -152,4 +149,9 @@ function heap:write(f, tostring_func)
 end
 
 
--- EOF -------------------------------------------------------------------------
+------------------------------------------------------------------------------
+
+return heap
+
+------------------------------------------------------------------------------
+
