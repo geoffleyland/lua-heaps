@@ -174,8 +174,11 @@ math.randomseed(1)
 test_heap_speed(binary_heap:new(), "binary heap")
 math.randomseed(1)
 test_heap_speed(skew_heap:new(), "skew heap")
-math.randomseed(1)
-test_sort_queue_speed()
+
+if arg[1] == "--with-sort" then
+  math.randomseed(1)
+  test_sort_queue_speed()
+end
 
 
 -- EOF -------------------------------------------------------------------------
