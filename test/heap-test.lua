@@ -57,7 +57,7 @@ local function test_heap_integrity(h, runs, insert_count, pop_count, range)
         h:write()
         error("Heap check failed after insertion")
       end
-      if size % 0 == 10 then io.write("Step: ", i, "/", runs, ": Heap size: ", size,".     \r") end
+      if size % 10 == 0 then io.write("Step: ", i, "/", runs, ": Heap size: ", size,".     \r") end
     end
     low = 0
     for j = 1,math.min(size, math_random(pop_count)) do
