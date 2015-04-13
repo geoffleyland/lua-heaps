@@ -39,7 +39,7 @@ end
 
 
 function heap:new(comparison, o)
-  o = o or {}
+  o = o or { length = 0 }
   self.__index = self
   setmetatable(o, self)
   o.comparison = comparison or default_comparison
@@ -50,13 +50,13 @@ end
 -- info ------------------------------------------------------------------------
 
 function heap:next_key()
-  assert(self[1], "The heap is empty")
+  assert(self.length > 0, "The heap is empty")
   return self[1].key
 end
 
 
 function heap:empty()
-  return self[1] == nil
+  return self.length == 0
 end
 
 
@@ -68,7 +68,9 @@ function heap:insert(k, v)
   local cmp = self.comparison
 
   -- float the new key up from the bottom of the heap
-  local child_index = #self + 1
+  self.length = self.length + 1
+  local new_record = self[self.length]  -- keep the old record to save on garbage
+  local child_index = self.length
   while child_index > 1 do
     local parent_index = math_floor(child_index / 2)
     local parent_rec = self[parent_index]
@@ -79,31 +81,35 @@ function heap:insert(k, v)
     end
     child_index = parent_index
   end
-  self[child_index] = {key = k, value = v}
+  if new_record then
+    new_record.key = k
+    new_record.value = v
+  else
+    new_record = {key = k, value = v}
+  end
+  self[child_index] = new_record
 end
 
 
 function heap:pop()
-  assert(self[1], "The heap is empty")
+  assert(self.length > 0, "The heap is empty")
 
   local cmp = self.comparison
 
   -- pop the top of the heap
   local result = self[1]
-  self[1] = nil
-  
-  local size = #self
 
   -- push the last element in the heap down from the top
-  local last = self[size]
+  local last = self[self.length]
   local last_key = (last and last.key) or nil
-  self[size] = nil
-  size = size - 1
+  -- keep the old record around to save on garbage
+  self[self.length] = self[1]
+  self.length = self.length - 1
 
   local parent_index = 1
-  while parent_index * 2 <= size do
+  while parent_index * 2 <= self.length do
     local child_index = parent_index * 2
-    if child_index+1 <= size and cmp(self[child_index+1].key, self[child_index].key) then
+    if child_index+1 <= self.length and cmp(self[child_index+1].key, self[child_index].key) then
       child_index = child_index + 1
     end
     local child_rec = self[child_index]
@@ -124,12 +130,11 @@ end
 
 function heap:check()
   local cmp = self.comparison
-  local size = #self
   local i = 1
   while true do
-    if i*2 > size then return true end
+    if i*2 > self.length then return true end
     if cmp(self[i*2].key, self[i].key) then return false end
-    if i*2+1 > size then return true end
+    if i*2+1 > self.length then return true end
     if cmp(self[i*2+1].key, self[i].key) then return false end
     i = i + 1
   end
@@ -141,10 +146,9 @@ end
 function heap:write(f, tostring_func)
   f = f or io.stdout
   tostring_func = tostring_func or tostring
-  local size = #self
 
   local function write_node(lines, i, level, end_spaces)
-    if size < 1 then return 0 end
+    if self.length < 1 then return 0 end
 
     i = i or 1
     level = level or 1
@@ -155,10 +159,10 @@ function heap:write(f, tostring_func)
 
     local left_child_index = i * 2
     local left_spaces, right_spaces = 0, 0
-    if left_child_index <= size then
+    if left_child_index <= self.length then
       left_spaces = write_node(lines, left_child_index, level+1, my_string:len())
     end
-    if left_child_index + 1 <= size then
+    if left_child_index + 1 <= self.length then
       right_spaces = write_node(lines, left_child_index + 1, level+1, end_spaces)
     end
     lines[level] = lines[level]..string.rep(' ', left_spaces)..my_string..string.rep(' ', right_spaces + end_spaces)
