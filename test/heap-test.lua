@@ -21,8 +21,8 @@ THE SOFTWARE.
 --]]
 
 
-local binary_heap = require("binary_heap")
-local skew_heap = require("skew_heap")
+local binary_heap = require("lua/binary_heap")
+local skew_heap = require("lua/skew_heap")
 local math_random = math.random
 local table_sort, table_remove = table.sort, table.remove
 

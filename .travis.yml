@@ -1,0 +1,15 @@
+language: c
+
+env:
+  - LUA='Lua 5.1'
+  - LUA='Lua 5.2'
+  - LUA='Lua 5.3'
+  - LUA='LuaJIT'
+
+before_install:
+  - bash .travis_setup.sh
+
+install:
+  - sudo apt-get update -qq
+
+script: lua test/heap-test.lua
