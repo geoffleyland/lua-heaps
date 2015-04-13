@@ -33,11 +33,16 @@ module(...)
 
 heap = _M
 
+local function default_comparison(k1, k2)
+  return k1 < k2
+end
+
+
 function heap:new(comparison, o)
   o = o or {}
   self.__index = self
   setmetatable(o, self)
-  o.comparison = comparison or function(k1, k2) return k1 < k2 end
+  o.comparison = comparison or default_comparison
   return o
 end
 
