@@ -17,5 +17,6 @@ install:
   - luarocks install luacheck
 
 script:
-  - luacheck .
+  - luacheck lua
+  - luacheck test
   - lua test/heap-test.lua
