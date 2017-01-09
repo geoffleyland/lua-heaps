@@ -30,7 +30,7 @@ local table_sort, table_remove = table.sort, table.remove
 
 local function test_heap_write(h)
   io.write("Pretty-printing heap:\n")
-  for i = 1, 20 do
+  for _ = 1, 20 do
     h:insert(math_random(100))
   end
   h:write()
@@ -49,7 +49,7 @@ local function test_heap_integrity(h, runs, insert_count, pop_count, range)
 
   io.write("Testing heap integrity...\n")
   for i = 1,runs do
-    for j = 1,math_random(insert_count) do
+    for _ = 1,math_random(insert_count) do
       h:insert(math_random(range), nil)
       size = size + 1
       if not h:check() then
@@ -60,10 +60,10 @@ local function test_heap_integrity(h, runs, insert_count, pop_count, range)
       if size % 10 == 0 then io.write("Step: ", i, "/", runs, ": Heap size: ", size,".     \r") end
     end
     low = 0
-    for j = 1,math.min(size, math_random(pop_count)) do
+    for _ = 1,math.min(size, math_random(pop_count)) do
       local r = h:pop()
       size = size - 1
-      if cmp(r, low) then 
+      if cmp(r, low) then
         io.write("\n")
         h:write()
         error(string.format("Popped %d after %d", r, low))
@@ -82,7 +82,7 @@ local function test_heap_integrity(h, runs, insert_count, pop_count, range)
   while not h:empty() do
     local r = h:pop()
     size = size - 1
-    if cmp(r, low) then 
+    if cmp(r, low) then
       io.write("\n")
       h:write()
       error(string.format("Popped %d after %d", r, low))
@@ -110,10 +110,10 @@ local function test_heap_speed(h, name, runs, insert_count, pop_count, range)
   local start = os.clock()
   for i = 1,runs do
     io.write("Step: ", i, "/", runs, ".\r")
-    for j = 1,insert_count do
+    for _ = 1,insert_count do
       h:insert(math_random(range), nil)
     end
-    for j = 1,pop_count do
+    for _ = 1,pop_count do
       h:pop()
     end
   end
@@ -121,7 +121,7 @@ local function test_heap_speed(h, name, runs, insert_count, pop_count, range)
   while not h:empty() do
     h:pop()
   end
-  
+
   local elapsed = os.clock() - start
   io.write("Done.  Elapsed time ", elapsed, " seconds (", elapsed / (insert_count * runs), " s/insert+pop).\n")
 end
@@ -136,17 +136,17 @@ local function test_sort_queue_speed(runs, insert_count, pop_count, range)
 
   local function cmp(a, b) return a.key < b.key end
 
-  h = {}
+  local h = {}
 
   io.write("Testing sorted queue speed...\n")
   local start = os.clock()
   for i = 1,runs do
     io.write("Step: ", i, "/", runs, ".\r")
-    for j = 1,insert_count do
+    for _ = 1,insert_count do
       h[#h+1] = { key=math_random(range), value=nil }
     end
     table_sort(h, cmp)
-    for j = 1,pop_count do
+    for _ = 1,pop_count do
       table_remove(h)
     end
   end
@@ -154,7 +154,7 @@ local function test_sort_queue_speed(runs, insert_count, pop_count, range)
   while h[1] do
     table_remove(h)
   end
-  
+
   local elapsed = os.clock() - start
   io.write("Done.  Elapsed time ", elapsed, " seconds (", elapsed / (insert_count * runs), " s/insert+pop).\n")
 end

@@ -55,7 +55,7 @@ end
 
 function heap:insert(k, v)
   assert(k, "You can't insert nil into a heap")
-  
+
   local cmp = self.comparison
 
   -- float the new key up from the bottom of the heap

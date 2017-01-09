@@ -120,7 +120,6 @@ end
 function heap:write(f, tostring_func)
   f = f or io.stdout
   tostring_func = tostring_func or tostring
-  local size = #self
 
   local function write_node(h, lines, line, start_col)
     line = line or 1
